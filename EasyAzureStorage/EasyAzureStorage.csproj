@@ -122,8 +122,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseAzureStorage.cs" />
-    <Compile Include="EncryptedAzureStorage.cs" />
     <Compile Include="AzureStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

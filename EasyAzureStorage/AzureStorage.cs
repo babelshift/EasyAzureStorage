@@ -206,6 +206,7 @@ namespace EasyAzureStorage
         public async Task<byte[]> DownloadEncryptedBlobAsync(string containerName, string blobName)
         {
             CheckRequiredBlobDownloadData(containerName, blobName);
+            CheckRequiredEncryptionData();
 
             var container = GetContainer(containerName);
             var blob = container.GetBlockBlobReference(blobName);
@@ -263,6 +264,7 @@ namespace EasyAzureStorage
         public async Task UploadEncryptedBlobAsync(string containerName, string blobName, string contentType, byte[] blob)
         {
             CheckRequiredBlobUploadData(containerName, blobName, contentType, blob);
+            CheckRequiredEncryptionData();
 
             // get the container and the blob we want to upload
             var container = GetContainer(containerName);
@@ -275,6 +277,24 @@ namespace EasyAzureStorage
             BlobRequestOptions requestOptions = new BlobRequestOptions() { EncryptionPolicy = encryptionPolicy };
 
             await blobRef.UploadFromByteArrayAsync(blob, 0, blob.Length, null, requestOptions, null);
+        }
+
+        private void CheckRequiredEncryptionData()
+        {
+            if (String.IsNullOrEmpty(encryptionKeyUri))
+            {
+                throw new InvalidOperationException("Key Vault Encryption Key URI must be initialized when using encrypted blobs.");
+            }
+
+            if (String.IsNullOrEmpty(clientId))
+            {
+                throw new InvalidOperationException("ActiveDirectory Client ID must be initialized when using encrypted blobs.");
+            }
+
+            if (String.IsNullOrEmpty(clientSecret))
+            {
+                throw new InvalidOperationException("ActiveDirectory Client Secret must be initialized when using encrypted blobs.");
+            }
         }
 
         private static void CheckRequiredBlobUploadData(string containerName, string blobName, string contentType, byte[] blob)
