@@ -211,7 +211,7 @@ namespace EasyAzureStorage
             var container = GetContainer(containerName);
             var blob = container.GetBlockBlobReference(blobName);
 
-            BlobEncryptionPolicy policy = new BlobEncryptionPolicy(null, keyVault.KeyResolver);
+            BlobEncryptionPolicy policy = new BlobEncryptionPolicy(null, KeyVault.KeyResolver);
             BlobRequestOptions options = new BlobRequestOptions() { EncryptionPolicy = policy };
 
             using (MemoryStream ms = new MemoryStream())
@@ -229,7 +229,7 @@ namespace EasyAzureStorage
             var container = GetContainer(containerName);
             var blob = container.GetBlockBlobReference(blobName);
 
-            BlobEncryptionPolicy policy = new BlobEncryptionPolicy(null, keyVault.KeyResolver);
+            BlobEncryptionPolicy policy = new BlobEncryptionPolicy(null, KeyVault.KeyResolver);
             BlobRequestOptions options = new BlobRequestOptions() { EncryptionPolicy = policy };
 
             using (MemoryStream ms = new MemoryStream())
@@ -272,7 +272,7 @@ namespace EasyAzureStorage
             blobRef.Properties.ContentType = contentType;
 
             // setup the encryption properties based on our encryption key in Azure Key Vault
-            var encryptionKey = await keyVault.GetKeyAsync(encryptionKeyUri);
+            var encryptionKey = await KeyVault.GetKeyAsync(encryptionKeyUri);
             BlobEncryptionPolicy encryptionPolicy = new BlobEncryptionPolicy(encryptionKey, null);
             BlobRequestOptions requestOptions = new BlobRequestOptions() { EncryptionPolicy = encryptionPolicy };
 
