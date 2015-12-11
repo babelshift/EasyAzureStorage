@@ -16,9 +16,17 @@ configuration: Release
 build:
   project: EasyAzureStorage.sln
   publish_nuget: true
+  include_nuget_references: true
   
 cache:
   - packages -> **\packages.config
   
 before_build:
   - cmd: nuget restore
+  
+deploy:
+  provider: NuGet
+  api_key:
+    secure: vIHuOdB4aYJEqNACb3jjCg3m/qZLqpwYlruu8J0BOiX81lRrmussVEUqiWRBTrRQ
+  skip_symbols: false
+  artifact: /.*\.nupkg/
