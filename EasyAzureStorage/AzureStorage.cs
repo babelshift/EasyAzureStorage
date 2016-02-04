@@ -99,7 +99,7 @@ namespace EasyAzureStorage
 
         #region Blob Operations
 
-        public DateTimeOffset? GetBlobLastModifiedDate(string containerName, string blobName)
+        public async Task<DateTimeOffset?> GetBlobLastModifiedDateAsync(string containerName, string blobName)
         {
             if (String.IsNullOrEmpty(containerName))
             {
@@ -113,6 +113,7 @@ namespace EasyAzureStorage
 
             var container = GetContainer(containerName);
             var blob = container.GetBlockBlobReference(blobName);
+            await blob.FetchAttributesAsync();
             return blob.Properties.LastModified;
         }
 
