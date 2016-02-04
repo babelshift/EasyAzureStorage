@@ -99,6 +99,23 @@ namespace EasyAzureStorage
 
         #region Blob Operations
 
+        public DateTimeOffset? GetBlobLastModifiedDate(string containerName, string blobName)
+        {
+            if (String.IsNullOrEmpty(containerName))
+            {
+                throw new ArgumentNullException("containerName");
+            }
+
+            if (String.IsNullOrEmpty(blobName))
+            {
+                throw new ArgumentNullException("blobName");
+            }
+
+            var container = GetContainer(containerName);
+            var blob = container.GetBlockBlobReference(blobName);
+            return blob.Properties.LastModified;
+        }
+
         /// <summary>
         /// Downloads and returns the contents of a blob from the specified container.
         /// </summary>
