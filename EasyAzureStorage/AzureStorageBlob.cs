@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EasyAzureStorage
 {
-    public class AzureStorage
+    public class AzureStorageBlob
     {
         #region Members
 
@@ -42,7 +42,7 @@ namespace EasyAzureStorage
         /// Constructs and initializes an object to download/upload/delete blob objects from Azure Storage.
         /// </summary>
         /// <param name="connectionString">Connection string to the storage account</param>
-        public AzureStorage(string connectionString)
+        public AzureStorageBlob(string connectionString)
         {
             if (String.IsNullOrEmpty(connectionString))
             {
@@ -59,7 +59,7 @@ namespace EasyAzureStorage
         /// <param name="encryptionKeyUri">URI to the key stored in Azure Key Vault that will be used for encryption</param>
         /// <param name="clientId">Azure ActiveDirectory Client ID used to authenticate the app</param>
         /// <param name="clientSecret">Azure ActiveDirectory Client Secret used to authenticate the app</param>
-        public AzureStorage(string connectionString, string encryptionKeyUri, string clientId, string clientSecret)
+        public AzureStorageBlob(string connectionString, string encryptionKeyUri, string clientId, string clientSecret)
             : this(connectionString)
         {
             if (String.IsNullOrEmpty(encryptionKeyUri))
@@ -84,7 +84,7 @@ namespace EasyAzureStorage
 
         #endregion Constructors
 
-        private CloudBlobContainer GetContainer(string containerName)
+        protected CloudBlobContainer GetContainer(string containerName)
         {
             if (String.IsNullOrEmpty(containerName))
             {
@@ -94,6 +94,7 @@ namespace EasyAzureStorage
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+
             return container;
         }
 
@@ -177,7 +178,7 @@ namespace EasyAzureStorage
 
             if (blob.Length == 0)
             {
-                throw new InvalidOperationException("blob cannot be empty.");
+                throw new ArgumentException("blob cannot be empty.");
             }
 
             var container = GetContainer(containerName);
