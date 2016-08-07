@@ -27,6 +27,7 @@ namespace EasyAzureStorage
             }
 
             this.connectionString = connectionString;
+            queueName = queueName.Trim().ToLower();
             this.SetupQueue(queueName);
         }
 
@@ -43,7 +44,6 @@ namespace EasyAzureStorage
             }
 
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
             this.queue = queueClient.GetQueueReference(queueName);
