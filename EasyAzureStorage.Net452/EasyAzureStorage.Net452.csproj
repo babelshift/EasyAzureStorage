@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EasyAzureStorage.Net452</RootNamespace>
-    <AssemblyName>EasyAzureStorage.Net452</AssemblyName>
+    <AssemblyName>EasyAzureStorage</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
