@@ -1,5 +1,4 @@
-﻿using EasyAzureKeyVault;
-using Microsoft.WindowsAzure.Storage;
+﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.IO;
@@ -12,30 +11,12 @@ namespace EasyAzureStorage
         #region Members
 
         private string connectionString;
-        private AzureKeyVault keyVault;
         private string encryptionKeyUri;
         private string clientId;
         private string clientSecret;
 
         #endregion Members
-
-        #region Properties
-
-        private AzureKeyVault KeyVault
-        {
-            get
-            {
-                if (keyVault == null)
-                {
-                    keyVault = new AzureKeyVault(clientId, clientSecret);
-                }
-
-                return keyVault;
-            }
-        }
-
-        #endregion Properties
-
+        
         #region Constructors
 
         /// <summary>
@@ -214,136 +195,136 @@ namespace EasyAzureStorage
 
         #endregion Blob Operations
 
-        #region Encrypted Blob Operations
+        //#region Encrypted Blob Operations
 
-        /// <summary>
-        /// Returns the contents of an encrypted blob.
-        /// </summary>
-        /// <param name="containerName">Container to get the blob from</param>
-        /// <param name="blobName">Name of the blob to retrieve</param>
-        /// <returns></returns>
-        public async Task<byte[]> DownloadEncryptedBlobAsync(string containerName, string blobName)
-        {
-            CheckRequiredBlobDownloadData(containerName, blobName);
-            CheckRequiredEncryptionData();
+        ///// <summary>
+        ///// Returns the contents of an encrypted blob.
+        ///// </summary>
+        ///// <param name="containerName">Container to get the blob from</param>
+        ///// <param name="blobName">Name of the blob to retrieve</param>
+        ///// <returns></returns>
+        //public async Task<byte[]> DownloadEncryptedBlobAsync(string containerName, string blobName)
+        //{
+        //    CheckRequiredBlobDownloadData(containerName, blobName);
+        //    CheckRequiredEncryptionData();
 
-            var container = GetContainer(containerName);
-            var blob = container.GetBlockBlobReference(blobName);
+        //    var container = GetContainer(containerName);
+        //    var blob = container.GetBlockBlobReference(blobName);
 
-            BlobEncryptionPolicy policy = new BlobEncryptionPolicy(null, KeyVault.KeyResolver);
-            BlobRequestOptions options = new BlobRequestOptions() { EncryptionPolicy = policy };
+        //    BlobEncryptionPolicy policy = new BlobEncryptionPolicy(null, KeyVault.KeyResolver);
+        //    BlobRequestOptions options = new BlobRequestOptions() { EncryptionPolicy = policy };
 
-            using (MemoryStream ms = new MemoryStream())
-            {
-                await blob.DownloadToStreamAsync(ms, null, options, null);
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        await blob.DownloadToStreamAsync(ms, null, options, null);
 
-                return ms.ToArray();
-            }
-        }
+        //        return ms.ToArray();
+        //    }
+        //}
 
-        public byte[] DownloadEncryptedBlob(string containerName, string blobName)
-        {
-            CheckRequiredBlobDownloadData(containerName, blobName);
+        //public byte[] DownloadEncryptedBlob(string containerName, string blobName)
+        //{
+        //    CheckRequiredBlobDownloadData(containerName, blobName);
 
-            var container = GetContainer(containerName);
-            var blob = container.GetBlockBlobReference(blobName);
+        //    var container = GetContainer(containerName);
+        //    var blob = container.GetBlockBlobReference(blobName);
 
-            BlobEncryptionPolicy policy = new BlobEncryptionPolicy(null, KeyVault.KeyResolver);
-            BlobRequestOptions options = new BlobRequestOptions() { EncryptionPolicy = policy };
+        //    BlobEncryptionPolicy policy = new BlobEncryptionPolicy(null, KeyVault.KeyResolver);
+        //    BlobRequestOptions options = new BlobRequestOptions() { EncryptionPolicy = policy };
 
-            using (MemoryStream ms = new MemoryStream())
-            {
-                blob.DownloadToStream(ms, null, options, null);
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        blob.DownloadToStream(ms, null, options, null);
 
-                return ms.ToArray();
-            }
-        }
+        //        return ms.ToArray();
+        //    }
+        //}
 
-        private static void CheckRequiredBlobDownloadData(string containerName, string blobName)
-        {
-            if (String.IsNullOrEmpty(containerName))
-            {
-                throw new ArgumentNullException("containerName");
-            }
+        //private static void CheckRequiredBlobDownloadData(string containerName, string blobName)
+        //{
+        //    if (String.IsNullOrEmpty(containerName))
+        //    {
+        //        throw new ArgumentNullException("containerName");
+        //    }
 
-            if (String.IsNullOrEmpty(blobName))
-            {
-                throw new ArgumentNullException("blobName");
-            }
-        }
+        //    if (String.IsNullOrEmpty(blobName))
+        //    {
+        //        throw new ArgumentNullException("blobName");
+        //    }
+        //}
 
-        /// <summary>
-        /// Encrypts and uploads a blob.
-        /// </summary>
-        /// <param name="containerName">Container to upload the blob to</param>
-        /// <param name="blobName">Name of the blob to upload</param>
-        /// <param name="contentType">MIME type of the blob to upload</param>
-        /// <param name="blob">Contents of the blob to upload</param>
-        /// <returns></returns>
-        public async Task UploadEncryptedBlobAsync(string containerName, string blobName, string contentType, byte[] blob)
-        {
-            CheckRequiredBlobUploadData(containerName, blobName, contentType, blob);
-            CheckRequiredEncryptionData();
+        ///// <summary>
+        ///// Encrypts and uploads a blob.
+        ///// </summary>
+        ///// <param name="containerName">Container to upload the blob to</param>
+        ///// <param name="blobName">Name of the blob to upload</param>
+        ///// <param name="contentType">MIME type of the blob to upload</param>
+        ///// <param name="blob">Contents of the blob to upload</param>
+        ///// <returns></returns>
+        //public async Task UploadEncryptedBlobAsync(string containerName, string blobName, string contentType, byte[] blob)
+        //{
+        //    CheckRequiredBlobUploadData(containerName, blobName, contentType, blob);
+        //    CheckRequiredEncryptionData();
 
-            // get the container and the blob we want to upload
-            var container = GetContainer(containerName);
-            var blobRef = container.GetBlockBlobReference(blobName);
-            blobRef.Properties.ContentType = contentType;
+        //    // get the container and the blob we want to upload
+        //    var container = GetContainer(containerName);
+        //    var blobRef = container.GetBlockBlobReference(blobName);
+        //    blobRef.Properties.ContentType = contentType;
 
-            // setup the encryption properties based on our encryption key in Azure Key Vault
-            var encryptionKey = await KeyVault.GetKeyAsync(encryptionKeyUri);
-            BlobEncryptionPolicy encryptionPolicy = new BlobEncryptionPolicy(encryptionKey, null);
-            BlobRequestOptions requestOptions = new BlobRequestOptions() { EncryptionPolicy = encryptionPolicy };
+        //    // setup the encryption properties based on our encryption key in Azure Key Vault
+        //    var encryptionKey = await KeyVault.GetKeyAsync(encryptionKeyUri);
+        //    BlobEncryptionPolicy encryptionPolicy = new BlobEncryptionPolicy(encryptionKey, null);
+        //    BlobRequestOptions requestOptions = new BlobRequestOptions() { EncryptionPolicy = encryptionPolicy };
 
-            await blobRef.UploadFromByteArrayAsync(blob, 0, blob.Length, null, requestOptions, null);
-        }
+        //    await blobRef.UploadFromByteArrayAsync(blob, 0, blob.Length, null, requestOptions, null);
+        //}
 
-        private void CheckRequiredEncryptionData()
-        {
-            if (String.IsNullOrEmpty(encryptionKeyUri))
-            {
-                throw new InvalidOperationException("Key Vault Encryption Key URI must be initialized when using encrypted blobs.");
-            }
+        //private void CheckRequiredEncryptionData()
+        //{
+        //    if (String.IsNullOrEmpty(encryptionKeyUri))
+        //    {
+        //        throw new InvalidOperationException("Key Vault Encryption Key URI must be initialized when using encrypted blobs.");
+        //    }
 
-            if (String.IsNullOrEmpty(clientId))
-            {
-                throw new InvalidOperationException("ActiveDirectory Client ID must be initialized when using encrypted blobs.");
-            }
+        //    if (String.IsNullOrEmpty(clientId))
+        //    {
+        //        throw new InvalidOperationException("ActiveDirectory Client ID must be initialized when using encrypted blobs.");
+        //    }
 
-            if (String.IsNullOrEmpty(clientSecret))
-            {
-                throw new InvalidOperationException("ActiveDirectory Client Secret must be initialized when using encrypted blobs.");
-            }
-        }
+        //    if (String.IsNullOrEmpty(clientSecret))
+        //    {
+        //        throw new InvalidOperationException("ActiveDirectory Client Secret must be initialized when using encrypted blobs.");
+        //    }
+        //}
 
-        private static void CheckRequiredBlobUploadData(string containerName, string blobName, string contentType, byte[] blob)
-        {
-            if (String.IsNullOrEmpty(containerName))
-            {
-                throw new ArgumentNullException("containerName");
-            }
+        //private static void CheckRequiredBlobUploadData(string containerName, string blobName, string contentType, byte[] blob)
+        //{
+        //    if (String.IsNullOrEmpty(containerName))
+        //    {
+        //        throw new ArgumentNullException("containerName");
+        //    }
 
-            if (String.IsNullOrEmpty(blobName))
-            {
-                throw new ArgumentNullException("blobName");
-            }
+        //    if (String.IsNullOrEmpty(blobName))
+        //    {
+        //        throw new ArgumentNullException("blobName");
+        //    }
 
-            if (String.IsNullOrEmpty(contentType))
-            {
-                throw new ArgumentNullException("contentType");
-            }
+        //    if (String.IsNullOrEmpty(contentType))
+        //    {
+        //        throw new ArgumentNullException("contentType");
+        //    }
 
-            if (blob == null)
-            {
-                throw new ArgumentNullException("blob");
-            }
+        //    if (blob == null)
+        //    {
+        //        throw new ArgumentNullException("blob");
+        //    }
 
-            if (blob.Length == 0)
-            {
-                throw new InvalidOperationException("blob cannot be empty.");
-            }
-        }
+        //    if (blob.Length == 0)
+        //    {
+        //        throw new InvalidOperationException("blob cannot be empty.");
+        //    }
+        //}
 
-        #endregion Encrypted Blob Operations
+        //#endregion Encrypted Blob Operations
     }
 }

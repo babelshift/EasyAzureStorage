@@ -14,4 +14,10 @@
     <copyright>Copyright 2015</copyright>
     <tags>azure storage</tags>
   </metadata>
+  <files>
+    <file src="..\bin\Release\net452\EasyAzureStorage.pdb" target="lib\net452\EasyAzureStorage.pdb"/>
+    <file src="..\bin\Release\net452\EasyAzureStorage.dll" target="lib\net452\EasyAzureStorage.dll"/>
+	
+    <file src="..\bin\Release\net46\EasyAzureStorage.pdb" target="lib\net46\EasyAzureStorage.pdb"/>
+  </files>
 </package>
