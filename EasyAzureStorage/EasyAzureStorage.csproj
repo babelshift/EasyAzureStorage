@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
+    <PackageId>EasyAzureStorage</PackageId>
+    <PackageVersion>3.0.0.0</PackageVersion>
+    <Authors>Justin Skiles</Authors>
+    <Description>Easy to use wrapper around some common Windows Azure Blob Storage functionality</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>azure storage blob library</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
