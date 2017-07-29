@@ -2,13 +2,29 @@
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 
 namespace EasyAzureStorage
 {
     public class AzureStorageQueue
     {
+        private string queueName;
         private string connectionString;
+
         private CloudQueue queue;
+
+        private async Task<CloudQueue> SetupQueueAsync()
+        {
+            if (queue == null)
+            {
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
+                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+                await this.queue.CreateIfNotExistsAsync();
+                this.queue = queueClient.GetQueueReference(queueName);
+            }
+
+            return queue;
+        }
 
         /// <summary>
         /// Constructs and initializes an object to download/upload/delete blob objects from Azure Storage.
@@ -27,57 +43,41 @@ namespace EasyAzureStorage
             }
 
             this.connectionString = connectionString;
-            queueName = queueName.Trim().ToLower();
-            this.SetupQueue(queueName);
+            this.queueName = queueName.Trim().ToLower();
         }
-
-        /// <summary>
-        /// Gets a reference to the queue in our currently connected storage account. The queue is created
-        /// if it doesn't exist.
-        /// </summary>
-        /// <param name="queueName"></param>
-        private void SetupQueue(string queueName)
-        {
-            if (String.IsNullOrEmpty(connectionString))
-            {
-                throw new ArgumentNullException("queueName");
-            }
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-
-            this.queue = queueClient.GetQueueReference(queueName);
-            this.queue.CreateIfNotExists();
-        }
-
+        
         /// <summary>
         /// Sends a message to the queue.
         /// </summary>
         /// <param name="message"></param>
-        public void SendMessage(string message)
+        public async Task SendMessageAsync(string message)
         {
             if (String.IsNullOrEmpty(message))
             {
                 throw new ArgumentNullException("queueName");
             }
 
+            await SetupQueueAsync();
+
             CloudQueueMessage newMessage = new CloudQueueMessage(message);
-            queue.AddMessage(newMessage);
+            await queue.AddMessageAsync(newMessage);
         }
 
         /// <summary>
         /// Sends a message to the queue.
         /// </summary>
         /// <param name="message"></param>
-        public void SendMessage(byte[] message)
+        public async Task SendMessageAsync(byte[] message)
         {
             if (message == null)
             {
                 throw new ArgumentNullException("message");
             }
 
-            CloudQueueMessage newMessage = new CloudQueueMessage(message);
-            queue.AddMessage(newMessage);
+            await SetupQueueAsync();
+
+            CloudQueueMessage newMessage = CloudQueueMessage.CreateCloudQueueMessageFromByteArray(message);
+            await queue.AddMessageAsync(newMessage);
         }
 
         /// <summary>
@@ -85,24 +85,28 @@ namespace EasyAzureStorage
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="message"></param>
-        public void SendMessage<T>(T message)
+        public async Task SendMessageAsync<T>(T message)
         {
             if (message == null)
             {
                 throw new ArgumentNullException("message");
             }
 
+            await SetupQueueAsync();
+
             string json = JsonConvert.SerializeObject(message);
-            SendMessage(json);
+            await SendMessageAsync(json);
         }
 
         /// <summary>
         /// Peeks at the first message on the queue and returns as a string.
         /// </summary>
         /// <returns></returns>
-        public string PeekMessage()
+        public async Task<string> PeekMessageAsync()
         {
-            CloudQueueMessage peekedMessage = queue.PeekMessage();
+            await SetupQueueAsync();
+
+            CloudQueueMessage peekedMessage = await queue.PeekMessageAsync();
             return peekedMessage.AsString;
         }
 
@@ -110,9 +114,11 @@ namespace EasyAzureStorage
         /// Peeks at the first message on the queue and returns as a byte array.
         /// </summary>
         /// <returns></returns>
-        public byte[] PeekMessageBytes()
+        public async Task<byte[]> PeekMessageBytesAsync()
         {
-            CloudQueueMessage peekedMessage = queue.PeekMessage();
+            await SetupQueueAsync();
+
+            CloudQueueMessage peekedMessage = await queue.PeekMessageAsync();
             return peekedMessage.AsBytes;
         }
 
@@ -121,9 +127,10 @@ namespace EasyAzureStorage
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T PeekMessageObject<T>()
+        public async Task<T> PeekMessageObject<T>()
         {
-            string json = PeekMessage();
+            await SetupQueueAsync();
+            string json = await PeekMessageAsync();
             return JsonConvert.DeserializeObject<T>(json);
         }
 
@@ -131,10 +138,11 @@ namespace EasyAzureStorage
         /// Gets and dequeues the first message on the queue and returns as a string.
         /// </summary>
         /// <returns></returns>
-        public string GetMessage()
+        public async Task<string> GetMessageAsync()
         {
-            CloudQueueMessage retrievedMessage = queue.GetMessage();
-            queue.DeleteMessage(retrievedMessage);
+            await SetupQueueAsync();
+            CloudQueueMessage retrievedMessage = await queue.GetMessageAsync();
+            await queue.DeleteMessageAsync(retrievedMessage);
             return retrievedMessage.AsString;
         }
 
@@ -142,10 +150,11 @@ namespace EasyAzureStorage
         /// Gets and dequeues the first message on the queue and returns as a byte array.
         /// </summary>
         /// <returns></returns>
-        public byte[] GetMessageBytes()
+        public async Task<byte[]> GetMessageBytesAsync()
         {
-            CloudQueueMessage retrievedMessage = queue.GetMessage();
-            queue.DeleteMessage(retrievedMessage);
+            await SetupQueueAsync();
+            CloudQueueMessage retrievedMessage = await queue.GetMessageAsync();
+            await queue.DeleteMessageAsync(retrievedMessage);
             return retrievedMessage.AsBytes;
         }
 
@@ -154,9 +163,10 @@ namespace EasyAzureStorage
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetMessageObject<T>()
+        public async Task<T> GetMessageObjectAsync<T>()
         {
-            string json = GetMessage();
+            await SetupQueueAsync();
+            string json = await GetMessageAsync();
             return JsonConvert.DeserializeObject<T>(json);
         }
     }
