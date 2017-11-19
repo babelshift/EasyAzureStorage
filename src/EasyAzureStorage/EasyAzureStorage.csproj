@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>This is a .NET library that makes it easy to use the Microsoft Azure Blob Storage.
+    <Description>This is a .NET library that makes it easy to use the Microsoft Azure Blob Storage.</Description>
     <VersionPrefix>4.0.0</VersionPrefix>
     <Authors>Justin Skiles</Authors>
     <AssemblyName>EasyAzureStorage</AssemblyName>
