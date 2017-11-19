@@ -78,3 +78,4 @@ _[Ss]cripts
 *.ncrunchsolution
 *.dot[Cc]over 
 SaferStash/App_Data/
+.vs/*
