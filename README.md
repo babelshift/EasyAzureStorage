@@ -1,3 +1,3 @@
 # EasyAzureStorage
-[![Build status](https://ci.appveyor.com/api/projects/status/pox8wfd42ou07l5y?svg=true)](https://ci.appveyor.com/project/JustinSkiles/easyazurestorage)
-[![NuGet](https://img.shields.io/nuget/v/EasyAzureStorage.svg)](https://www.nuget.org/packages/EasyAzureStorage)
+
+This library has been deprecated because the [Azure Storage SDK](https://github.com/Azure/azure-sdk-for-net/tree/master/sdk/storage/Azure.Storage.Blobs) has been much improved.
